@@ -1,9 +1,9 @@
 import 'package:connect/Service/fservice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:connect/Sign Screen/Sign_in/Sign.dart';
 
 class ForgetPassword extends StatelessWidget {
+  static const String routeName = 'forget screen';
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,6 @@ class ForgetPassword extends StatelessWidget {
                         },
                         onSaved: (value) {
                           email = value;
-                          print(email);
                         },
                         decoration: InputDecoration(
                             labelText: 'Enter Email Address',

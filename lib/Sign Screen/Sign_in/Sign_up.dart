@@ -1,3 +1,4 @@
+import 'package:connect/Service/firebase.dart';
 import 'package:connect/Service/fservice.dart';
 import 'package:connect/Sign%20Screen/Sign_in/ForgetPassword.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   bool _obSecure = true;
   bool _signState = false;
+  bool _isLoading = false;
   AnimationController _animationController;
   Animation<double> _slide;
   String email = '';
@@ -23,10 +25,22 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
     try {
       if (_formKey.currentState.validate()) {
         _formKey.currentState.save();
+        setState(() {
+          _isLoading = true;
+        });
         if (_signState == true) {
           Authentication.signUp(
                   password: password, email: email, username: username)
-              .catchError((error) {
+              .then((val) {
+            _isLoading = false;
+            FirebaseMethod.addUserInfo(
+              email: email,
+              userName: username,
+            );
+          }).catchError((error) {
+            setState(() {
+              _isLoading = false;
+            });
             _scaffoldKey.currentState.showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).errorColor,
               content: Text(error.message.toString()),
@@ -34,8 +48,12 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
           });
         } else {
           var message = '';
-          Authentication.signIn(email: username, password: password)
-              .catchError((error) {
+          Authentication.signIn(email: username, password: password).then((_) {
+            _isLoading = false;
+          }).catchError((error) {
+            setState(() {
+              _isLoading = false;
+            });
             if (error.message.toString().contains('identifier')) {
               message = " user doesn't exits";
             } else if (error.message.toString().contains('is invalid')) {
@@ -148,56 +166,64 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
               ),
               FlatButton(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => ForgetPassword()));
+                    Navigator.of(context).pushNamed(ForgetPassword.routeName);
                   },
                   child: Text(
                     'forgot password ?',
                     style: TextStyle(color: Colors.black45),
                   )),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: _submitSignUp,
-                    child: Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.all(5),
-                      height: size.height * 0.07,
-                      width: size.width * 0.4,
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).accentColor,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: Colors.brown,
-                          )),
-                      child: Text(
-                        _signState ? 'SignUp' : 'Login',
-                        style: TextStyle(color: Colors.brown),
+              _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.brown,
                       ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            _submitSignUp();
+                            FocusScope.of(context).unfocus();
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.all(5),
+                            height: size.height * 0.07,
+                            width: size.width * 0.4,
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).accentColor,
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                  color: Colors.brown,
+                                )),
+                            child: Text(
+                              _signState ? 'SignUp' : 'Login',
+                              style: TextStyle(color: Colors.brown),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.all(5),
+                            height: size.height * 0.07,
+                            width: size.width * 0.4,
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                  color: Colors.white54,
+                                )),
+                            child: Text(
+                              'Use Google',
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.all(5),
-                      height: size.height * 0.07,
-                      width: size.width * 0.4,
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: Colors.white54,
-                          )),
-                      child: Text(
-                        'Use Google',
-                        style: TextStyle(color: Colors.white54),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               SizedBox(
                 height: size.height * 0.07,
               ),

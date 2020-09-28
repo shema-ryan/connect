@@ -28,7 +28,7 @@ class Authentication {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } catch (e) {
-      print(e.toString());
+      throw e;
     }
   }
 
