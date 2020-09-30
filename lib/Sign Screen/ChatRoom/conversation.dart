@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/Service/firebase.dart';
+import 'package:connect/Service/serviceH.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -14,16 +15,13 @@ class _ConversationState extends State<Conversation> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _send = false;
   final TextEditingController _controller = TextEditingController();
-  String chatId = '';
-
+  String chatId = FirebaseFirestore.instance.collection('ChatRoom').id;
+  final _auth = FirebaseAuth.instance..currentUser.displayName;
   _sendMessage() async {
     if (_controller.text.isNotEmpty) {
       FirebaseMethod.sendMessage(chatId: chatId, message: _controller.text);
+      _controller.clear();
     }
-  }
-
-  Future<String> getChatId() async {
-    print(FirebaseFirestore.instance.collection('ChatRoom').id);
   }
 
   @override
@@ -50,6 +48,7 @@ class _ConversationState extends State<Conversation> {
           StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('ChatRoom/$chatId/Chats')
+                  .orderBy('time', descending: true)
                   .snapshots(),
               builder: (context, snap) {
                 if (snap.connectionState == ConnectionState.waiting ||
@@ -105,4 +104,25 @@ class _ConversationState extends State<Conversation> {
       ),
     );
   }
+}
+
+Widget textMessage({String message, BuildContext context, bool send}) {
+  return Container(
+    margin: const EdgeInsets.all(5.0),
+    alignment: send ? Alignment.centerRight : Alignment.centerLeft,
+    padding: const EdgeInsets.all(8.0),
+    width: MediaQuery.of(context).size.width * 0.35,
+    decoration: BoxDecoration(
+        color: send ? Colors.brown : Colors.grey,
+        borderRadius: BorderRadius.only(
+          bottomRight: !send ? Radius.circular(10) : Radius.zero,
+          bottomLeft: send ? Radius.zero : Radius.circular(10),
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        )),
+    child: Text(
+      message,
+      style: TextStyle(color: send ? Colors.white54 : Colors.black54),
+    ),
+  );
 }

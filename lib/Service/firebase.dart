@@ -34,7 +34,7 @@ class FirebaseMethod {
     print('$chatId , $message');
     await _store.collection('ChatRoom').doc(chatId).collection('Chats').add({
       'message': message,
-      'time': Timestamp.now(),
+      'time': Timestamp.now().microsecondsSinceEpoch,
     });
   }
 }
