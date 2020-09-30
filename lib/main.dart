@@ -1,8 +1,6 @@
+import 'package:connect/Sign%20Screen/ChatRoom/conversation.dart';
 import 'package:flutter/material.dart';
-import 'Sign Screen/Sign_in/Sign.dart';
-import './Sign Screen/ChatRoom/chatScreen.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import './Service/serviceH.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +38,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         ForgetPassword.routeName: (BuildContext context) => ForgetPassword(),
+        Conversation.routeName: (BuildContext context) => Conversation(),
       },
     );
   }

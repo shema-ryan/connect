@@ -30,7 +30,9 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
         });
         if (_signState == true) {
           Authentication.signUp(
-                  password: password, email: email, username: username)
+                  password: password,
+                  email: email,
+                  username: username.toLowerCase())
               .then((val) {
             _isLoading = false;
             FirebaseMethod.addUserInfo(
@@ -48,7 +50,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
           });
         } else {
           var message = '';
-          Authentication.signIn(email: username, password: password).then((_) {
+          Authentication.signIn(email: email, password: password).then((_) {
             _isLoading = false;
           }).catchError((error) {
             setState(() {
@@ -100,38 +102,38 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              TextFormField(
-                key: ValueKey('text1'),
-                onSaved: (value) {
-                  username = value;
-                },
-                validator: (value) {
-                  if (value.isEmpty || value.length <= 4) {
-                    return 'name must be of 5 characters';
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                    icon: Icon(Icons.person), labelText: 'username'),
-              ),
               if (_signState)
                 FadeTransition(
                   opacity: _slide,
                   child: TextFormField(
-                    key: ValueKey('text2'),
+                    key: ValueKey('text1'),
                     onSaved: (value) {
-                      email = value;
+                      username = value;
                     },
                     validator: (value) {
-                      if (value.isEmpty || !value.contains('@')) {
-                        return 'please Enter a valid email';
+                      if (value.isEmpty || value.length <= 4) {
+                        return 'name must be of 5 characters';
                       }
                       return null;
                     },
                     decoration: InputDecoration(
-                        icon: Icon(Icons.mail), labelText: 'e-mail'),
+                        icon: Icon(Icons.person), labelText: 'username'),
                   ),
                 ),
+              TextFormField(
+                key: ValueKey('text2'),
+                onSaved: (value) {
+                  email = value;
+                },
+                validator: (value) {
+                  if (value.isEmpty || !value.contains('@')) {
+                    return 'please Enter a valid email';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                    icon: Icon(Icons.mail), labelText: 'e-mail'),
+              ),
               Row(
                 children: [
                   Expanded(
