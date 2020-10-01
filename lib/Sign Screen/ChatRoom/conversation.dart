@@ -120,9 +120,8 @@ class _ConversationState extends State<Conversation> {
 }
 
 Widget textMessage({String message, BuildContext context, bool send, Key key}) {
-  return Column(
-    crossAxisAlignment:
-        send ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+  return Row(
+    mainAxisAlignment: send ? MainAxisAlignment.end : MainAxisAlignment.start,
     children: [
       Container(
         key: key,

@@ -15,6 +15,7 @@ class _HomePageState extends State<HomePage> {
   bool _show = false;
   bool _listS = false;
   bool _welcome = true;
+  final _current = FirebaseAuth.instance;
   QuerySnapshot snap1;
   @override
   void dispose() {
@@ -47,7 +48,10 @@ class _HomePageState extends State<HomePage> {
                       return Card(
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
-                          title: Text(snap.data.docs[index].data()['user'][1]),
+                          title: Text(snap.data.docs[index].data()['user'][1] ==
+                                  _current.currentUser.displayName
+                              ? snap.data.docs[index].data()['user'][0]
+                              : snap.data.docs[index].data()['user'][1]),
                           onTap: () {
                             if (snap.data.docs[index].data()['user'][0] !=
                                 snap.data.docs[index].data()['user'][1])
@@ -55,7 +59,12 @@ class _HomePageState extends State<HomePage> {
                                   Conversation.routeName,
                                   arguments: {
                                     'name': snap.data.docs[index].data()['user']
-                                        [1],
+                                                [1] ==
+                                            _current.currentUser.displayName
+                                        ? snap.data.docs[index].data()['user']
+                                            [0]
+                                        : snap.data.docs[index].data()['user']
+                                            [1],
                                     'chatId': Authentication.createChatId(
                                         username1: snap.data.docs[index]
                                             .data()['user'][0],
