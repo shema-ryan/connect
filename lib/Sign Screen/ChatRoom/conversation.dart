@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/Service/firebase.dart';
 import 'package:connect/Service/serviceH.dart';
@@ -15,15 +17,6 @@ class _ConversationState extends State<Conversation> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _send = false;
   final TextEditingController _controller = TextEditingController();
-  String chatId = FirebaseFirestore.instance.collection('ChatRoom').id;
-  final _auth = FirebaseAuth.instance..currentUser.displayName;
-  _sendMessage() async {
-    if (_controller.text.isNotEmpty) {
-      FirebaseMethod.sendMessage(chatId: chatId, message: _controller.text);
-      _controller.clear();
-    }
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -35,6 +28,17 @@ class _ConversationState extends State<Conversation> {
     final Map name =
         ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
     final String userName = name['name'].toString().toUpperCase();
+    final String chatId = name['chatId'];
+    _sendMessage() async {
+      if (_controller.text.isNotEmpty) {
+        FirebaseMethod.sendMessage(
+            chatId: chatId,
+            message: _controller.text,
+            userName: FirebaseAuth.instance.currentUser.displayName);
+        _controller.clear();
+      }
+    }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -43,12 +47,13 @@ class _ConversationState extends State<Conversation> {
         title: Text(userName),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('ChatRoom/$chatId/Chats')
                   .orderBy('time', descending: true)
+                  .limit(20)
                   .snapshots(),
               builder: (context, snap) {
                 if (snap.connectionState == ConnectionState.waiting ||
@@ -60,9 +65,16 @@ class _ConversationState extends State<Conversation> {
                   );
                 }
                 return ListView.builder(
+                  reverse: true,
                   shrinkWrap: true,
                   itemCount: snap.data.docs.length,
-                  itemBuilder: (context, index) => Text('hello'),
+                  itemBuilder: (context, index) => textMessage(
+                    message: snap.data.docs[index].data()['message'],
+                    context: context,
+                    send: snap.data.docs[index].data()['sentBy'] ==
+                        FirebaseAuth.instance.currentUser.displayName,
+                    key: ValueKey(Random().nextInt(5).toString()),
+                  ),
                 );
               }),
           Padding(
@@ -90,6 +102,7 @@ class _ConversationState extends State<Conversation> {
                     color: _send ? Colors.brown : Colors.grey,
                   ),
                   onPressed: () {
+                    print(chatId);
                     FocusScope.of(context).unfocus();
                     setState(() {
                       _send = false;
@@ -106,23 +119,29 @@ class _ConversationState extends State<Conversation> {
   }
 }
 
-Widget textMessage({String message, BuildContext context, bool send}) {
-  return Container(
-    margin: const EdgeInsets.all(5.0),
-    alignment: send ? Alignment.centerRight : Alignment.centerLeft,
-    padding: const EdgeInsets.all(8.0),
-    width: MediaQuery.of(context).size.width * 0.35,
-    decoration: BoxDecoration(
-        color: send ? Colors.brown : Colors.grey,
-        borderRadius: BorderRadius.only(
-          bottomRight: !send ? Radius.circular(10) : Radius.zero,
-          bottomLeft: send ? Radius.zero : Radius.circular(10),
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        )),
-    child: Text(
-      message,
-      style: TextStyle(color: send ? Colors.white54 : Colors.black54),
-    ),
+Widget textMessage({String message, BuildContext context, bool send, Key key}) {
+  return Column(
+    crossAxisAlignment:
+        send ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+    children: [
+      Container(
+        key: key,
+        width: MediaQuery.of(context).size.width * 0.5,
+        margin: const EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+            color: send ? Colors.brown : Colors.grey[300],
+            borderRadius: BorderRadius.only(
+              bottomRight: !send ? Radius.circular(10) : Radius.zero,
+              bottomLeft: !send ? Radius.zero : Radius.circular(10),
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            )),
+        child: Text(
+          message,
+          style: TextStyle(color: send ? Colors.white : Colors.black),
+        ),
+      ),
+    ],
   );
 }

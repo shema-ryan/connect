@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect/Service/fservice.dart';
+import 'package:flutter/cupertino.dart';
 
 class FirebaseMethod {
   static void addUserInfo({String email, String userName}) {
@@ -29,12 +30,16 @@ class FirebaseMethod {
     });
   }
 
-  static Future<void> sendMessage({String chatId, String message}) async {
+  static Future<void> sendMessage(
+      {@required String chatId,
+      @required String message,
+      @required String userName}) async {
     FirebaseFirestore _store = FirebaseFirestore.instance;
     print('$chatId , $message');
     await _store.collection('ChatRoom').doc(chatId).collection('Chats').add({
       'message': message,
       'time': Timestamp.now().microsecondsSinceEpoch,
+      'sentBy': userName
     });
   }
 }
