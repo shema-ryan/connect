@@ -17,6 +17,7 @@ class _HomePageState extends State<HomePage> {
   bool _welcome = true;
   final _current = FirebaseAuth.instance;
   QuerySnapshot snap1;
+  int _currentIndex = 0;
   @override
   void dispose() {
     super.dispose();
@@ -27,6 +28,33 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffold,
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.brown[100],
+        elevation: 0.0,
+        showUnselectedLabels: false,
+        onTap: (int selected) {
+          setState(() {
+            _currentIndex = selected;
+          });
+        },
+        unselectedItemColor: Colors.black54,
+        selectedItemColor: Colors.brown,
+        currentIndex: _currentIndex,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            title: Text('message'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            title: Text('profile'),
+          ),
+        ],
+      ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('ChatRoom')
@@ -129,15 +157,22 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         elevation: 0.0,
         centerTitle: true,
-        title: Text('Connect'),
+        title: Text(
+          'Connect',
+          style: TextStyle(color: Colors.brown),
+        ),
         actions: [
           IconButton(
             onPressed: () {
               Authentication.signOut();
             },
-            icon: Icon(Icons.exit_to_app),
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.brown,
+            ),
           )
         ],
       ),
