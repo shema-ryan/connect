@@ -41,7 +41,22 @@ class _ConversationState extends State<Conversation> {
 
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Theme.of(context).accentColor,
       appBar: AppBar(
+        actions: [
+          PopupMenuButton(onSelected: (int selected) {
+            if (selected == 0) {
+              print('implement the clear function');
+            }
+          }, itemBuilder: (_) {
+            return [
+              PopupMenuItem(
+                child: Text('clear'),
+                value: 0,
+              )
+            ];
+          })
+        ],
         elevation: 0.0,
         centerTitle: true,
         title: Text(userName),
@@ -88,7 +103,7 @@ class _ConversationState extends State<Conversation> {
                   decoration: InputDecoration(
                       hintText: 'Send a message ... ',
                       border: InputBorder.none,
-                      fillColor: Colors.grey,
+                      fillColor: Colors.white38,
                       filled: true),
                   onTap: () {
                     setState(() {

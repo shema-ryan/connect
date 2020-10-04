@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).accentColor,
       key: _scaffold,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.brown[100],
@@ -74,6 +75,7 @@ class _HomePageState extends State<HomePage> {
                     itemCount: snap.data.docs.length,
                     itemBuilder: (context, index) {
                       return Card(
+                        color: Colors.brown[100],
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
                           title: Text(snap.data.docs[index].data()['user'][1] ==
