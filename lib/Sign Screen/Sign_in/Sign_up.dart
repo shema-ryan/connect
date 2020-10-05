@@ -206,7 +206,9 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Authentication.signInWithGoogle();
+                          },
                           child: Container(
                             alignment: Alignment.center,
                             margin: EdgeInsets.all(5),
@@ -236,7 +238,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                     !_signState
                         ? "Don't have an account ? "
                         : 'Already Have an account ?',
-                    style: TextStyle(fontSize: 17),
+                    style: TextStyle(fontSize: 14),
                   ),
                   TextButton(
                     onPressed: () {
@@ -253,7 +255,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                       });
                     },
                     child: Text(
-                      _signState ? 'Login instead' : 'Register now',
+                      _signState ? 'Sign in' : 'Sign Up',
                     ),
                   ),
                 ],

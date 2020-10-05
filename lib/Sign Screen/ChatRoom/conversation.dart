@@ -45,9 +45,7 @@ class _ConversationState extends State<Conversation> {
       appBar: AppBar(
         actions: [
           PopupMenuButton(onSelected: (int selected) {
-            if (selected == 0) {
-              print('implement the clear function');
-            }
+            if (selected == 0) {}
           }, itemBuilder: (_) {
             return [
               PopupMenuItem(

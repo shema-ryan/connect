@@ -35,7 +35,6 @@ class FirebaseMethod {
       @required String message,
       @required String userName}) async {
     FirebaseFirestore _store = FirebaseFirestore.instance;
-    print('$chatId , $message');
     await _store.collection('ChatRoom').doc(chatId).collection('Chats').add({
       'message': message,
       'time': Timestamp.now().microsecondsSinceEpoch,
